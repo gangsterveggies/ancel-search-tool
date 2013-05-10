@@ -31,7 +31,7 @@ namespace AncelSearchTool {
 
         private ListStore model;
         private TreeView list;
-        
+
         private Label search_text_label;
         private Label search_location_label;
 
@@ -89,16 +89,18 @@ namespace AncelSearchTool {
             list = new TreeView.with_model (this.model);
             list.insert_column_with_attributes (-1, "Filename",
                                                 new CellRendererText (), "text", 0);
+            list.hexpand = true;
+            list.vexpand = true;
 
             /* TEMP Add an example member to the tree view */
             TreeIter iter;
             model.append (out iter);
             model.set (iter, 0, "Example");
-            
+
             scrolled_window = new ScrolledWindow (null, null);
-            scrolled_window.set_policy (PolicyType.NEVER, PolicyType.AUTOMATIC);
+            scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.NEVER);
             scrolled_window.add (list);
-            layout_grid.attach (scrolled_window, 1, 4, 1, 1);
+            layout_grid.attach (scrolled_window, 1, 4, 2, 1);
 
             add (layout_grid);
         }
