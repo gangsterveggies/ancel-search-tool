@@ -27,6 +27,11 @@ namespace AncelSearchTool {
 
         private Grid layout_grid;
 
+        private ScrolledWindow scrolled_window;
+
+        private ListStore model;
+        private TreeView list;
+        
         private Label search_text_label;
         private Label search_location_label;
 
@@ -79,6 +84,21 @@ namespace AncelSearchTool {
             layout_grid.attach (file_chooser_button, 2, 3, 1, 1);
 
             layout_grid.margin = 12;
+
+            model = new ListStore (1, typeof (string));
+            list = new TreeView.with_model (this.model);
+            list.insert_column_with_attributes (-1, "Filename",
+                                                new CellRendererText (), "text", 0);
+
+            /* TEMP Add an example member to the tree view */
+            TreeIter iter;
+            model.append (out iter);
+            model.set (iter, 0, "Example");
+            
+            scrolled_window = new ScrolledWindow (null, null);
+            scrolled_window.set_policy (PolicyType.NEVER, PolicyType.AUTOMATIC);
+            scrolled_window.add (list);
+            layout_grid.attach (scrolled_window, 1, 4, 1, 1);
 
             add (layout_grid);
         }

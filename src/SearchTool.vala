@@ -39,19 +39,19 @@ public class SearchTool {
             name += loc[i].to_string ();
         }
 
-        return new Result(loc, name);
+        return new Result (loc, name);
     }
 
     public static List<Result> search_keyword (string location, string keyword) {
         Posix.system ("find %s -name '%s' > tmp.tmp".printf (location, keyword));
 
-		string text;
+        string text;
 
-		try {
-			FileUtils.get_contents ("tmp.tmp", out text);
-		} catch (Error error) {
-			print ("Error opening file.\n");
-		}
+        try {
+            FileUtils.get_contents ("tmp.tmp", out text);
+        } catch (Error error) {
+            print ("Error opening file.\n");
+        }
 
         Posix.system ("rm tmp.tmp");
         string[] results = text.split ("\n");
