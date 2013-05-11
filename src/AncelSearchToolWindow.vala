@@ -102,6 +102,9 @@ namespace AncelSearchTool {
             scrolled_window.add (list);
             layout_grid.attach (scrolled_window, 1, 4, 2, 1);
 
+            search_button = new Button.with_label ("Search");
+            layout_grid.attach (search_button, 1, 5, 1, 1);  
+
             add (layout_grid);
         }
     }
