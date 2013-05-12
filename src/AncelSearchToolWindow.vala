@@ -64,12 +64,16 @@ namespace AncelSearchTool {
             set_size_request (640, 400);
         }
 
+		private void append_to_list (Result new_item) {
+			TreeIter iter;
+			model.append (out iter);
+			model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
+		}
+
         private void* search_func () {
-            SearchTool.init_search(".", "*");
+            SearchTool.init_search(file_chooser_button.get_filename (), search_text_entry.text);
             while (!this.search_cancel && SearchTool.has_next()) {
-                TreeIter iter;
-                model.append (out iter);
-                model.set (iter, 0, SearchTool.next);
+				append_to_list (SearchTool.get_next());
                 Thread.usleep (1000);
             }
             this.search_over = true;
@@ -77,22 +81,20 @@ namespace AncelSearchTool {
         }
 
         private void on_search_clicked() {
-            if (this.search_over)
-            {
+            if (this.search_over) {
                 this.search_cancel = false;
                 this.search_over = false;
                 model.clear();
                 try {
-                    // New version of Threading
-                    // search_thread = new Thread<void*> ("SearchThread", search_func);
+                    // New version of Threading (not working)
+                    // search_thread = new Thread<void*> (search_func);
                     search_thread = Thread.create<void*> (search_func, false);              
                 } catch (ThreadError e) {
                     stderr.printf ("%s\n", e.message);
                     return;
                 }
             }
-            else
-            {
+            else {
                 this.search_cancel = true;
                 search_thread.join();
                 this.search_over = true;
@@ -126,17 +128,14 @@ namespace AncelSearchTool {
 
             layout_grid.margin = 12;
 
-            model = new ListStore (1, typeof (string));
+            model = new ListStore (3, typeof (string), typeof (string), typeof (string));
             list = new TreeView.with_model (this.model);
-            list.insert_column_with_attributes (-1, "Filename",
-                                                new CellRendererText (), "text", 0);
+			CellRendererText cell = new CellRendererText ();
+            list.insert_column_with_attributes (-1, "Filename", cell, "text", 0);
+            list.insert_column_with_attributes (-1, "Type", cell, "text", 1);
+            list.insert_column_with_attributes (-1, "Location", cell, "text", 2);
             list.hexpand = true;
             list.vexpand = true;
-
-            /* TEMP Add an example member to the tree view */
-            TreeIter iter;
-            model.append (out iter);
-            model.set (iter, 0, "Example");
 
             scrolled_window = new ScrolledWindow (null, null);
             scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.NEVER);
