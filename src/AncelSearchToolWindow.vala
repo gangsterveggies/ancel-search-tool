@@ -25,10 +25,10 @@ namespace AncelSearchTool {
 
     public class AncelSearchToolWindow : Gtk.Window {
 
-		private unowned Thread<void*> search_thread;
-		private bool search_cancel;
-		private bool search_over;
-		
+        private unowned Thread<void*> search_thread;
+        private bool search_cancel;
+        private bool search_over;
+        
         private Grid layout_grid;
 
         private ScrolledWindow scrolled_window;
@@ -52,8 +52,8 @@ namespace AncelSearchTool {
 
         private void init () {
             icon_name = "";
-			this.search_cancel = false;
-			this.search_over = true;
+            this.search_cancel = false;
+            this.search_over = true;
 
             title = _("Ancel Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
@@ -64,9 +64,9 @@ namespace AncelSearchTool {
             set_size_request (640, 400);
         }
 
-		private void* search_func () {
-			SearchTool.init_search(".", "*");
-			while (!this.search_cancel && SearchTool.has_next()) {
+        private void* search_func () {
+            SearchTool.init_search(".", "*");
+            while (!this.search_cancel && SearchTool.has_next()) {
                 TreeIter iter;
                 model.append (out iter);
                 model.set (iter, 0, SearchTool.next);
@@ -82,22 +82,22 @@ namespace AncelSearchTool {
                 this.search_cancel = false;
                 this.search_over = false;
                 model.clear();
-				try {
-					// New version of Threading
-					// search_thread = new Thread<void*> ("SearchThread", search_func);
-					search_thread = Thread.create<void*> (search_func, false);				
-				} catch (ThreadError e) {
-					stderr.printf ("%s\n", e.message);
-					return;
-				}
-			}
-			else
-			{
-				this.search_cancel = true;
-				search_thread.join();
-				this.search_over = true;
-			}
-		}
+                try {
+                    // New version of Threading
+                    // search_thread = new Thread<void*> ("SearchThread", search_func);
+                    search_thread = Thread.create<void*> (search_func, false);              
+                } catch (ThreadError e) {
+                    stderr.printf ("%s\n", e.message);
+                    return;
+                }
+            }
+            else
+            {
+                this.search_cancel = true;
+                search_thread.join();
+                this.search_over = true;
+            }
+        }
 
         private void setup_ui () {
             layout_grid = new Grid ();
@@ -145,7 +145,7 @@ namespace AncelSearchTool {
 
             search_button = new Button.with_label ("Search");
             layout_grid.attach (search_button, 1, 5, 1, 1);
-		    search_button.clicked.connect (on_search_clicked);
+            search_button.clicked.connect (on_search_clicked);
 
             add (layout_grid);
         }
