@@ -64,16 +64,16 @@ namespace AncelSearchTool {
             set_size_request (640, 400);
         }
 
-		private void append_to_list (Result new_item) {
-			TreeIter iter;
-			model.append (out iter);
-			model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
-		}
+        private void append_to_list (Result new_item) {
+            TreeIter iter;
+            model.append (out iter);
+            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
+        }
 
         private void* search_func () {
             SearchTool.init_search(file_chooser_button.get_filename (), search_text_entry.text);
             while (!this.search_cancel && SearchTool.has_next()) {
-				append_to_list (SearchTool.get_next());
+                append_to_list (SearchTool.get_next());
                 Thread.usleep (1000);
             }
             this.search_over = true;
@@ -130,12 +130,13 @@ namespace AncelSearchTool {
 
             model = new ListStore (3, typeof (string), typeof (string), typeof (string));
             list = new TreeView.with_model (this.model);
-			CellRendererText cell = new CellRendererText ();
+            CellRendererText cell = new CellRendererText ();
             list.insert_column_with_attributes (-1, "Filename", cell, "text", 0);
             list.insert_column_with_attributes (-1, "Type", cell, "text", 1);
             list.insert_column_with_attributes (-1, "Location", cell, "text", 2);
             list.hexpand = true;
             list.vexpand = true;
+            list.row_activated.connect (on_row_activated);
 
             scrolled_window = new ScrolledWindow (null, null);
             scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.NEVER);
@@ -147,6 +148,20 @@ namespace AncelSearchTool {
             search_button.clicked.connect (on_search_clicked);
 
             add (layout_grid);
+        }
+
+        private void on_row_activated (TreeView treeview , TreePath path, TreeViewColumn column) {
+            TreeIter iter;
+            treeview.model.get_iter (out iter, path);
+            Result item = new Result.null ();
+            treeview.model.get (iter, 1, out item.type, 2, out item.location);
+            if (item.type == "Directory") {
+                try {
+                    Process.spawn_command_line_async ("xdg-open " + item.location);
+                } catch (Error e) {
+                    stderr.printf ("File Error trying to open a directory: %s\n", e.message);
+                }
+            }
         }
     }
 }
