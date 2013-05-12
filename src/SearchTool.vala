@@ -45,6 +45,7 @@ public class Result {
 
 public class SearchTool {
     public static string current_location;
+    public static string original_location;
     public static string keyword;
     public static string next;
     public static FileType next_type;
@@ -86,6 +87,7 @@ public class SearchTool {
         begin = true;
         counter = 1;
         keyword = _keyword;
+        original_location = _location;
     }
 
     public static Result get_next () {
@@ -127,6 +129,10 @@ public class SearchTool {
         }
         if (!(keyword.down () in next.down ()) && keyword != "*") {
             return has_next ();
+        }
+        if (next_type == FileType.DIRECTORY) {
+            dir_stack.add (current_location + "/" + next);
+            counter++;
         }
         return true;
     }
