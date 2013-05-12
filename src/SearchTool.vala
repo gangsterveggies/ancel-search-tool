@@ -31,13 +31,13 @@ public class Result {
 }
 
 public class SearchTool {
-	public static string keyword;
-	public static string next;
-	public static bool begin;
-	public static int counter;
-	public static FileEnumerator enumerator;
-	public static ArrayList<string> dir_stack;
-	
+    public static string keyword;
+    public static string next;
+    public static bool begin;
+    public static int counter;
+    public static FileEnumerator enumerator;
+    public static ArrayList<string> dir_stack;
+    
     public static Result parseLocation (string loc) {
         string name = "";
 
@@ -48,22 +48,22 @@ public class SearchTool {
         return new Result (loc, name);
     }
 
-	public static void init_search (string _location, string _keyword) {
-		dir_stack = new ArrayList<string> ();
-		dir_stack.add (_location);
-		begin = true;
-		counter = 1;
-		keyword = _keyword;
-		next = "";
-	}
+    public static void init_search (string _location, string _keyword) {
+        dir_stack = new ArrayList<string> ();
+        dir_stack.add (_location);
+        begin = true;
+        counter = 1;
+        keyword = _keyword;
+        next = "";
+    }
 
-	public static bool has_next () {
-		try {
-			FileInfo file_info = null;
-			if (enumerator != null && (file_info = enumerator.next_file()) != null) {
-				next = file_info.get_name ();
-			}
-			else {
+    public static bool has_next () {
+        try {
+            FileInfo file_info = null;
+            if (enumerator != null && (file_info = enumerator.next_file()) != null) {
+                next = file_info.get_name ();
+            }
+            else {
                 if (!begin) {
                     dir_stack.remove_at(0);
                     counter--;
@@ -71,21 +71,21 @@ public class SearchTool {
                         return false;
                 }
                 begin = false;
-				var directory = File.new_for_path (dir_stack.first ());
-				enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
-				while ((file_info = enumerator.next_file ()) == null) {
-					dir_stack.remove_at (0);
-					counter--;
-					if (counter == 0)
-						return false;
-					directory = File.new_for_path (dir_stack.first ());
-					enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
-				}
-				next = file_info.get_name();
-			}
-		} catch (Error e) {
-			stderr.printf ("File Error trying to read a directory: %s\n", e.message);
-		}
-		return true;
-	}
+                var directory = File.new_for_path (dir_stack.first ());
+                enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
+                while ((file_info = enumerator.next_file ()) == null) {
+                    dir_stack.remove_at (0);
+                    counter--;
+                    if (counter == 0)
+                        return false;
+                    directory = File.new_for_path (dir_stack.first ());
+                    enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
+                }
+                next = file_info.get_name();
+            }
+        } catch (Error e) {
+            stderr.printf ("File Error trying to read a directory: %s\n", e.message);
+        }
+        return true;
+    }
 }
