@@ -34,7 +34,7 @@ namespace AncelSearchTool {
             app_launcher = "ancel-search-tool.desktop";
             about_authors = { "David Gomes <davidrafagomes@gmail.com>", "Pedro Paredes <gangsterveggies@gmail.com>" };
 
-            //about_documenters = {""};
+//          about_documenters = {""};
             about_artists = { "David Gomes <davidrafagomes@gmail.com>" };
             about_translators = "Launchpad Translators";
             about_license_type = License.GPL_3_0;
