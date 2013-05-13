@@ -93,7 +93,7 @@ namespace AncelSearchTool {
                     // search_thread = new Thread<void*> (search_func);
                     search_thread = Thread.create<void*> (search_func, false);              
                 }
-				catch (ThreadError e) {
+                catch (ThreadError e) {
                     stderr.printf ("%s\n", e.message);
                     return;
                 }
@@ -154,6 +154,21 @@ namespace AncelSearchTool {
             add (layout_grid);
         }
 
+        private string console_clean (string command) {
+            string new_string = "";
+            int i;
+            
+            for (i = 0; i < command.length; i++) {
+                if (command[i].isspace ()) {
+                    new_string += "\\";
+                }
+
+                new_string += command[i].to_string ();
+            }
+
+            return new_string;
+        }
+
         private void on_row_activated (TreeView treeview , TreePath path, TreeViewColumn column) {
             TreeIter iter;
             treeview.model.get_iter (out iter, path);
@@ -162,10 +177,9 @@ namespace AncelSearchTool {
 
             if (item.type == "Directory") {
                 try {
-                    Process.spawn_command_line_async ("xdg-open " + item.location);
-					print ("xdg-open " + item.location + "\n");
+                    Process.spawn_command_line_async ("xdg-open " + console_clean (item.location));
                 }
-				catch (Error e) {
+                catch (Error e) {
                     stderr.printf ("File Error trying to open a directory: %s\n", e.message);
                 }
             }
