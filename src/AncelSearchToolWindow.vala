@@ -72,7 +72,6 @@ namespace AncelSearchTool {
 
         private void* search_func () {
             SearchTool.init_search(file_chooser_button.get_filename (), search_text_entry.text);
-            print (file_chooser_button.get_filename () + " " + search_text_entry.text + "\n");
 
             while (!this.search_cancel && SearchTool.has_next()) {
                 append_to_list (SearchTool.get_next());
