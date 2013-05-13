@@ -79,6 +79,8 @@ namespace AncelSearchTool {
             }
 
             this.search_over = true;
+// ABCD: The following line crashes the code...
+			this.search_button.set_label ("Search");
             return null;
         }
 
@@ -86,6 +88,7 @@ namespace AncelSearchTool {
             if (this.search_over) {
                 this.search_cancel = false;
                 this.search_over = false;
+				this.search_button.set_label ("Cancel");
                 model.clear();
 
                 try {
@@ -102,6 +105,7 @@ namespace AncelSearchTool {
                 this.search_cancel = true;
                 search_thread.join();
                 this.search_over = true;
+				this.search_button.set_label ("Search");
             }
         }
 

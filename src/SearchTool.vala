@@ -137,7 +137,7 @@ public class SearchTool {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
         }
 
-        if (!(keyword.down () in next.down ()) && keyword != "*") {
+        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
             return has_next ();
         }
 
