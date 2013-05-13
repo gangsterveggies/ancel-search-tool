@@ -72,10 +72,12 @@ namespace AncelSearchTool {
 
         private void* search_func () {
             SearchTool.init_search(file_chooser_button.get_filename (), search_text_entry.text);
+
             while (!this.search_cancel && SearchTool.has_next()) {
                 append_to_list (SearchTool.get_next());
                 Thread.usleep (1000);
             }
+
             this.search_over = true;
             return null;
         }
@@ -85,11 +87,13 @@ namespace AncelSearchTool {
                 this.search_cancel = false;
                 this.search_over = false;
                 model.clear();
+
                 try {
                     // New version of Threading (not working)
                     // search_thread = new Thread<void*> (search_func);
                     search_thread = Thread.create<void*> (search_func, false);              
-                } catch (ThreadError e) {
+                }
+				catch (ThreadError e) {
                     stderr.printf ("%s\n", e.message);
                     return;
                 }
@@ -155,10 +159,13 @@ namespace AncelSearchTool {
             treeview.model.get_iter (out iter, path);
             Result item = new Result.null ();
             treeview.model.get (iter, 1, out item.type, 2, out item.location);
+
             if (item.type == "Directory") {
                 try {
                     Process.spawn_command_line_async ("xdg-open " + item.location);
-                } catch (Error e) {
+					print ("xdg-open " + item.location + "\n");
+                }
+				catch (Error e) {
                     stderr.printf ("File Error trying to open a directory: %s\n", e.message);
                 }
             }

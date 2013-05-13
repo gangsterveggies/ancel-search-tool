@@ -34,6 +34,7 @@ public class Result {
     public Result (string _location, string _name, string _type) {
         location = _location;
         name = _name;
+
         if (_type != "") {
             type = _type;
         }
@@ -65,12 +66,14 @@ public class SearchTool {
                     i++;
                     break;
                 }
+
                 name += loc[i].to_string ();
             }
             
             for (; i < loc.length; i++) {
-                type += loc[i].to_string();
+                type += loc[i].to_string ();
             }
+
             return new Result (current_location + "/" + loc, name, type);
         }
         else if (file_type == FileType.DIRECTORY) {
@@ -105,35 +108,44 @@ public class SearchTool {
                 if (!begin) {
                     dir_stack.remove_at(0);
                     counter--;
-                    if (counter == 0)
+                    if (counter == 0) {
                         return false;
+					}
                 }
+
                 begin = false;
                 var directory = File.new_for_path (dir_stack.first ());
                 enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
                 current_location = dir_stack.first ();
+
                 while ((file_info = enumerator.next_file ()) == null) {
                     dir_stack.remove_at (0);
                     counter--;
-                    if (counter == 0)
+                    if (counter == 0) {
                         return false;
+					}
                     directory = File.new_for_path (dir_stack.first ());
                     enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
                     current_location = dir_stack.first ();
                 }
-                next = file_info.get_name();
+
+                next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
             }
-        } catch (Error e) {
+        }
+		catch (Error e) {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
         }
+
         if (!(keyword.down () in next.down ()) && keyword != "*") {
             return has_next ();
         }
+
         if (next_type == FileType.DIRECTORY) {
             dir_stack.add (current_location + "/" + next);
             counter++;
         }
+
         return true;
     }
 }
