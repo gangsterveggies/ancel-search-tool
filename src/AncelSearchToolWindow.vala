@@ -143,7 +143,7 @@ namespace AncelSearchTool {
             list.row_activated.connect (on_row_activated);
 
             scrolled_window = new ScrolledWindow (null, null);
-            scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.NEVER);
+            scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
             scrolled_window.add (list);
             layout_grid.attach (scrolled_window, 1, 4, 2, 1);
 
