@@ -37,8 +37,7 @@ public class Result {
 
         if (_type != "") {
             type = _type;
-        }
-        else {
+        } else {
             type = "Executable";
         }
     }
@@ -75,11 +74,9 @@ public class SearchTool {
             }
 
             return new Result (current_location + "/" + loc, name, type);
-        }
-        else if (file_type == FileType.DIRECTORY) {
+        } else if (file_type == FileType.DIRECTORY) {
             return new Result (current_location + "/" + loc, loc, "Directory");
-        }
-        else {
+        } else {
             return new Result (current_location + "/" + loc, loc, "Other");
         }
     }
@@ -103,14 +100,13 @@ public class SearchTool {
             if (enumerator != null && (file_info = enumerator.next_file()) != null) {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
-            }
-            else {
+            } else {
                 if (!begin) {
                     dir_stack.remove_at(0);
                     counter--;
                     if (counter == 0) {
                         return false;
-					}
+                    }
                 }
 
                 begin = false;
@@ -123,7 +119,7 @@ public class SearchTool {
                     counter--;
                     if (counter == 0) {
                         return false;
-					}
+                    }
                     directory = File.new_for_path (dir_stack.first ());
                     enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
                     current_location = dir_stack.first ();
@@ -132,12 +128,11 @@ public class SearchTool {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
             }
-        }
-		catch (Error e) {
+        } catch (Error e) {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
         }
 
-        if (!(keyword.down () in next.down ()) && keyword != "*") {
+        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
             return has_next ();
         }
 

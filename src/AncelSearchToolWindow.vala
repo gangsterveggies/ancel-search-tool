@@ -78,30 +78,30 @@ namespace AncelSearchTool {
                 Thread.usleep (1000);
             }
 
-            this.search_over = true;
+            search_over = true;
+            Thread.usleep (1000);
+            this.search_button.set_label ("Search");
             return null;
         }
 
         private void on_search_clicked() {
-            if (this.search_over) {
-                this.search_cancel = false;
-                this.search_over = false;
+            if (search_over) {
+                search_cancel = false;
+                search_over = false;
+                search_button.set_label ("Cancel");
                 model.clear();
 
                 try {
                     // New version of Threading (not working)
                     // search_thread = new Thread<void*> (search_func);
                     search_thread = Thread.create<void*> (search_func, false);              
-                }
-                catch (ThreadError e) {
+                } catch (ThreadError e) {
                     stderr.printf ("%s\n", e.message);
                     return;
                 }
-            }
-            else {
+            } else {
                 this.search_cancel = true;
                 search_thread.join();
-                this.search_over = true;
             }
         }
 
@@ -178,8 +178,7 @@ namespace AncelSearchTool {
             if (item.type == "Directory") {
                 try {
                     Process.spawn_command_line_async ("xdg-open " + console_clean (item.location));
-                }
-                catch (Error e) {
+                } catch (Error e) {
                     stderr.printf ("File Error trying to open a directory: %s\n", e.message);
                 }
             }
