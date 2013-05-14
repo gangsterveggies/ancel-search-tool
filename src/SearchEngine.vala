@@ -20,29 +20,6 @@
 
 using Gee;
 
-public class Result {
-    public string location;
-    public string name;
-    public string type;
-
-    public Result.null () {
-        location = "";
-        name = "";
-        type = "";
-    }
-
-    public Result (string _location, string _name, string _type) {
-        location = _location;
-        name = _name;
-
-        if (_type != "") {
-            type = _type;
-        } else {
-            type = "Executable";
-        }
-    }
-}
-
 public class SearchTool {
     public static string current_location;
     public static string original_location;
@@ -53,8 +30,8 @@ public class SearchTool {
     public static int counter;
     public static FileEnumerator enumerator;
     public static ArrayList<string> dir_stack;
-    
-    public static Result parseLocation (string loc, FileType file_type) {
+
+    public static Result parse_location (string loc, FileType file_type) {
         string name = "";
         string type = "";
         
@@ -91,13 +68,14 @@ public class SearchTool {
     }
 
     public static Result get_next () {
-        return parseLocation (next, next_type);
+        return parse_location (next, next_type);
     }
 
     public static bool has_next () {
         try {
             FileInfo file_info = null;
-            if (enumerator != null && (file_info = enumerator.next_file()) != null) {
+
+            if (enumerator != null && (file_info = enumerator.next_file ()) != null) {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
             } else {
@@ -117,9 +95,11 @@ public class SearchTool {
                 while ((file_info = enumerator.next_file ()) == null) {
                     dir_stack.remove_at (0);
                     counter--;
+
                     if (counter == 0) {
                         return false;
                     }
+
                     directory = File.new_for_path (dir_stack.first ());
                     enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
                     current_location = dir_stack.first ();
