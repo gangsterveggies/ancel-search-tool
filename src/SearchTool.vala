@@ -97,12 +97,12 @@ public class SearchTool {
     public static bool has_next () {
         try {
             FileInfo file_info = null;
-            if (enumerator != null && (file_info = enumerator.next_file()) != null) {
+            if (enumerator != null && (file_info = enumerator.next_file ()) != null) {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
             } else {
                 if (!begin) {
-                    dir_stack.remove_at(0);
+                    dir_stack.remove_at (0);
                     counter--;
                     if (counter == 0) {
                         return false;
@@ -132,13 +132,13 @@ public class SearchTool {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
         }
 
-        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
-            return has_next ();
-        }
-
         if (next_type == FileType.DIRECTORY) {
             dir_stack.add (current_location + "/" + next);
             counter++;
+        }
+
+        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
+            return has_next ();
         }
 
         return true;
