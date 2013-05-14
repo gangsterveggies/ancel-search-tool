@@ -132,13 +132,13 @@ public class SearchTool {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
         }
 
-        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
-            return has_next ();
-        }
-
         if (next_type == FileType.DIRECTORY) {
             dir_stack.add (current_location + "/" + next);
             counter++;
+        }
+
+        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
+            return has_next ();
         }
 
         return true;
