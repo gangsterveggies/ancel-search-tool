@@ -1,7 +1,8 @@
 /***
     BEGIN LICENSE
 
-    Copyright (C) 2013 David Gomes <davidrafagomes@gmail.com>, Pedro Paredes <gangsterveggies@gmail.com>
+    Copyright (C) 2013 David Gomes <davidrafagomes@gmail.com>,
+                       Pedro Paredes <gangsterveggies@gmail.com>
 
     This program is free software: you can redistribute it and/or modify it
     under the terms of the GNU Lesser General Public License version 3, as published
@@ -18,9 +19,6 @@
     END LICENSE
 ***/
 
-using Gtk;
-using Gdk;
-
 namespace AncelSearchTool {
 
     public class AncelSearchToolWindow : Gtk.Window {
@@ -31,21 +29,21 @@ namespace AncelSearchTool {
         private bool search_cancel;
         private bool search_over;
         
-        private Grid layout_grid;
+        private Gtk.Grid layout_grid;
 
-        private ScrolledWindow scrolled_window;
+        private Gtk.ScrolledWindow scrolled_window;
 
-        private ListStore model;
-        private TreeView list;
+        private Gtk.ListStore model;
+        private Gtk.TreeView list;
 
-        private Label search_text_label;
-        private Label search_location_label;
+        private Gtk.Label search_text_label;
+        private Gtk.Label search_location_label;
 
-        private Entry search_text_entry;
-        private FileChooserButton file_chooser_button;
+        private Gtk.Entry search_text_entry;
+        private Gtk.FileChooserButton file_chooser_button;
 
-        private Button search_button;
-        private Button about_button;
+        private Gtk.Button search_button;
+        private Gtk.Button about_button;
 
         public AncelSearchToolWindow (Granite.Application app) {
             this.app = app as AncelSearchTool;
@@ -68,7 +66,7 @@ namespace AncelSearchTool {
         }
 
         private void append_to_list (Result new_item) {
-            TreeIter iter;
+            Gtk.TreeIter iter;
             model.append (out iter);
             model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
         }
@@ -76,7 +74,7 @@ namespace AncelSearchTool {
         private void* search_func () {
             SearchTool.init_search(file_chooser_button.get_filename (), search_text_entry.text);
 
-            while (!this.search_cancel && SearchTool.has_next()) {
+            while (!this.search_cancel && SearchTool.has_next ()) {
                 append_to_list (SearchTool.get_next());
                 Thread.usleep (1000);
             }
@@ -87,11 +85,11 @@ namespace AncelSearchTool {
             return null;
         }
 
-        private void on_search_clicked() {
+        private void on_search_clicked () {
             if (search_over) {
                 search_cancel = false;
                 search_over = false;
-                search_button.set_label ("Cancel");
+                search_button.set_label ("Stop");
                 model.clear();
 
                 try {
@@ -104,25 +102,25 @@ namespace AncelSearchTool {
                 }
             } else {
                 this.search_cancel = true;
-                search_thread.join();
+                search_thread.join ();
             }
         }
 
         private void setup_ui () {
-            layout_grid = new Grid ();
+            layout_grid = new Gtk.Grid ();
 
-            search_text_label = new Label ("Search for:");
+            search_text_label = new Gtk.Label ("Search for:");
             search_text_label.set_alignment (0, 0.5f);
-            search_text_label.set_justify (Justification.LEFT);
+            search_text_label.set_justify (Gtk.Justification.LEFT);
 
-            search_location_label = new Label ("Search in:");
+            search_location_label = new Gtk.Label ("Search in:");
             search_location_label.set_alignment (0, 0.5f);
-            search_location_label.set_justify (Justification.LEFT);
+            search_location_label.set_justify (Gtk.Justification.LEFT);
 
-            search_text_entry = new Entry ();
+            search_text_entry = new Gtk.Entry ();
             search_text_entry.hexpand = true;
 
-            file_chooser_button = new FileChooserButton ("Open", Gtk.FileChooserAction.SELECT_FOLDER);
+            file_chooser_button = new Gtk.FileChooserButton ("Open", Gtk.FileChooserAction.SELECT_FOLDER);
 
             layout_grid.row_spacing = 10;
 
@@ -134,9 +132,9 @@ namespace AncelSearchTool {
 
             layout_grid.margin = 12;
 
-            model = new ListStore (3, typeof (string), typeof (string), typeof (string));
-            list = new TreeView.with_model (this.model);
-            CellRendererText cell = new CellRendererText ();
+            model = new Gtk.ListStore (3, typeof (string), typeof (string), typeof (string));
+            list = new Gtk.TreeView.with_model (this.model);
+            Gtk.CellRendererText cell = new Gtk.CellRendererText ();
             list.insert_column_with_attributes (-1, "Filename", cell, "text", 0);
             list.insert_column_with_attributes (-1, "Type", cell, "text", 1);
             list.insert_column_with_attributes (-1, "Location", cell, "text", 2);
@@ -144,17 +142,18 @@ namespace AncelSearchTool {
             list.vexpand = true;
             list.row_activated.connect (on_row_activated);
 
-            scrolled_window = new ScrolledWindow (null, null);
-            scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+            scrolled_window = new Gtk.ScrolledWindow (null, null);
+            scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
             scrolled_window.add (list);
             layout_grid.attach (scrolled_window, 1, 4, 13, 1);
 
-            search_button = new Button.with_label ("Search");
-            layout_grid.attach (search_button, 1, 5, 1, 1);
+            search_button = new Gtk.Button.with_label ("Search");
+            layout_grid.attach (search_button, 13, 5, 1, 1);
             search_button.clicked.connect (on_search_clicked);
 
-            about_button = new Button.with_label ("About");
-            layout_grid.attach (about_button, 2, 5, 1, 1);
+            about_button = new Gtk.Button.with_label ("About");
+            layout_grid.attach (about_button, 1, 5, 1, 1);
+
             about_button.clicked.connect (() => {
                 this.app.show_about (this);
             });
@@ -165,7 +164,7 @@ namespace AncelSearchTool {
         private string console_clean (string command) {
             string new_string = "";
             int i;
-            
+
             for (i = 0; i < command.length; i++) {
                 if (command[i].isspace ()) {
                     new_string += "\\";
@@ -177,8 +176,8 @@ namespace AncelSearchTool {
             return new_string;
         }
 
-        private void on_row_activated (TreeView treeview , TreePath path, TreeViewColumn column) {
-            TreeIter iter;
+        private void on_row_activated (Gtk.TreeView treeview , Gtk.TreePath path, Gtk.TreeViewColumn column) {
+            Gtk.TreeIter iter;
             treeview.model.get_iter (out iter, path);
             Result item = new Result.null ();
             treeview.model.get (iter, 1, out item.type, 2, out item.location);
