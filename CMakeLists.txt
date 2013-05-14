@@ -48,7 +48,8 @@ include (ValaPrecompile)
 vala_precompile(VALA_C
     src/AncelSearchTool.vala
     src/AncelSearchToolWindow.vala
-    src/SearchTool.vala
+    src/SearchEngine.vala
+    src/Result.vala
 PACKAGES
     granite
     gtk+-3.0

@@ -32,12 +32,16 @@ namespace AncelSearchTool {
             app_years = "2013";
             app_icon = "";
             app_launcher = "ancel-search-tool.desktop";
-            about_authors = { "David Gomes <davidrafagomes@gmail.com>", "Pedro Paredes <gangsterveggies@gmail.com>" };
+            about_authors = { "David Gomes <davidrafagomes@gmail.com>",
+                              "Pedro Paredes <gangsterveggies@gmail.com>" };
 
-//          about_documenters = {""};
+            // about_documenters = {""};
             about_artists = { "David Gomes <davidrafagomes@gmail.com>" };
             about_translators = "Launchpad Translators";
             about_license_type = License.GPL_3_0;
+            
+            main_url = "https://github.com/gangsterveggies/ancel-search-tool";
+            bug_url = "https://github.com/gangsterveggies/ancel-search-tool/issues";
         }
 
         protected override void activate () {
