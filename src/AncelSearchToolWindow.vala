@@ -134,7 +134,7 @@ namespace AncelSearchTool {
 
             model = new Gtk.ListStore (3, typeof (string), typeof (string), typeof (string));
             list = new Gtk.TreeView.with_model (this.model);
-            Gtk.CellRendererText cell = new Gtk.CellRendererText ();
+            Gtk.CellRendererSpin cell = new Gtk.CellRendererSpin ();
             list.insert_column_with_attributes (-1, "Filename", cell, "text", 0);
             list.insert_column_with_attributes (-1, "Type", cell, "text", 1);
             list.insert_column_with_attributes (-1, "Location", cell, "text", 2);
@@ -181,13 +181,14 @@ namespace AncelSearchTool {
             treeview.model.get_iter (out iter, path);
             Result item = new Result.null ();
             treeview.model.get (iter, 1, out item.type, 2, out item.location);
-
-            if (item.type == "Directory") {
-                try {
-                    Process.spawn_command_line_async ("xdg-open " + console_clean (item.location));
-                } catch (Error e) {
-                    stderr.printf ("File Error trying to open a directory: %s\n", e.message);
-                }
+            
+            try {
+                string[] spawn_args = {"xdg-open", console_clean (item.location)};
+                string[] spawn_env = Environ.get ();
+                Pid child_pid;
+                Process.spawn_async ("/", spawn_args, spawn_env, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid);
+            } catch (SpawnError e) {
+                stdout.printf ("File Error trying to open a directory: %s\n", e.message);
             }
         }
     }

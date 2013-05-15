@@ -25,30 +25,35 @@ public class SearchTool {
     public static string original_location;
     public static string keyword;
     public static string next;
+    public static string next_extension;
     public static FileType next_type;
     public static bool begin;
     public static int counter;
     public static FileEnumerator enumerator;
     public static ArrayList<string> dir_stack;
 
-    public static Result parse_location (string loc, FileType file_type) {
+    public static Result parse_location (string loc, FileType file_type, string type) {
         string name = "";
-        string type = "";
         
         if (file_type == FileType.REGULAR) {
             int i;
-            for (i = 0; i < loc.length; i++) {
+
+            for (i = loc.length - 1; i >= 0; i--) {
                 if (loc[i] == '.') {
-                    i++;
+                    i--;
                     break;
                 }
+            }
+            
+            if (i == -1) {
+                i = loc.length - 1;
+            }
 
+            for (; i >= 0; i--) {
                 name += loc[i].to_string ();
             }
             
-            for (; i < loc.length; i++) {
-                type += loc[i].to_string ();
-            }
+            name = name.reverse ();
 
             return new Result (current_location + "/" + loc, name, type);
         } else if (file_type == FileType.DIRECTORY) {
@@ -68,7 +73,7 @@ public class SearchTool {
     }
 
     public static Result get_next () {
-        return parse_location (next, next_type);
+        return parse_location (next, next_type, next_extension);
     }
 
     public static bool has_next () {
@@ -78,6 +83,7 @@ public class SearchTool {
             if (enumerator != null && (file_info = enumerator.next_file ()) != null) {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
+                next_extension = file_info.get_content_type ();
             } else {
                 if (!begin) {
                     dir_stack.remove_at(0);
@@ -90,7 +96,7 @@ public class SearchTool {
 
                 begin = false;
                 var directory = File.new_for_path (dir_stack.first ());
-                enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
+                enumerator = directory.enumerate_children ("standard::*", 0);
                 current_location = dir_stack.first ();
 
                 while ((file_info = enumerator.next_file ()) == null) {
@@ -102,12 +108,13 @@ public class SearchTool {
                     }
 
                     directory = File.new_for_path (dir_stack.first ());
-                    enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
+                    enumerator = directory.enumerate_children ("standard::*", 0);
                     current_location = dir_stack.first ();
                 }
 
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
+                next_extension = file_info.get_content_type ();
             }
         } catch (Error e) {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
