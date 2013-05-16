@@ -32,7 +32,7 @@ public class SearchTool {
     public static FileEnumerator enumerator;
     public static ArrayList<string> dir_stack;
 
-    public static Result parse_location (string loc, FileType file_type, string type) {
+    public static Result parse_location (string loc, FileType file_type, string type, string parent) {
         string name = "";
         
         if (file_type == FileType.REGULAR) {
@@ -55,11 +55,11 @@ public class SearchTool {
             
             name = name.reverse ();
 
-            return new Result (current_location + "/" + loc, name, type);
+            return new Result (current_location + "/" + loc, name, type, parent);
         } else if (file_type == FileType.DIRECTORY) {
-            return new Result (current_location + "/" + loc, loc, "Directory");
+            return new Result (current_location + "/" + loc, loc, "Directory", parent);
         } else {
-            return new Result (current_location + "/" + loc, loc, "Other");
+            return new Result (current_location + "/" + loc, loc, "Other", parent);
         }
     }
 
@@ -73,7 +73,7 @@ public class SearchTool {
     }
 
     public static Result get_next () {
-        return parse_location (next, next_type, next_extension);
+        return parse_location (next, next_type, next_extension, dir_stack.first ());
     }
 
     public static bool has_next () {

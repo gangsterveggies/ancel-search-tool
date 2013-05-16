@@ -35,8 +35,10 @@ namespace AncelSearchTool {
 
         private Gtk.ScrolledWindow scrolled_window;
 
-        private Gtk.ListStore model;
+        private Gtk.TreeStore model;
         private Gtk.TreeView list;
+
+        private Gee.HashMap<string, Gtk.TreeIter?> parent_map;
 
         private Gtk.Label search_text_label;
         private Gtk.Label search_location_label;
@@ -58,6 +60,7 @@ namespace AncelSearchTool {
             this.search_cancel = false;
             this.search_over = true;
             this.used_items = 0;
+            parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
 
             title = _("Ancel Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
@@ -70,11 +73,21 @@ namespace AncelSearchTool {
 
         private void append_to_list (Result new_item) {
             Gtk.TreeIter iter;
-            model.append (out iter);
+
+            if (parent_map.has_key (new_item.parent)) {
+                model.append (out iter, parent_map.get (new_item.parent));
+            } else {
+                model.append (out iter, null);
+            }
+
             string color_string = "white";
 
             if (used_items % 2 == 0) {
                 color_string = "#F2F2F2";
+            }
+
+            if (new_item.type == "Directory") {
+                parent_map.set (new_item.location, iter);
             }
 
             model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location, 3, color_string);
@@ -86,6 +99,7 @@ namespace AncelSearchTool {
 
             while (!this.search_cancel && SearchTool.has_next ()) {
                 append_to_list (SearchTool.get_next());
+                list.expand_all ();
                 Thread.usleep (1000);
             }
 
@@ -97,6 +111,7 @@ namespace AncelSearchTool {
 
         private void on_search_clicked () {
             if (search_over) {
+                parent_map.clear ();
                 search_cancel = false;
                 search_over = false;
                 search_button.set_label ("Stop");
@@ -143,7 +158,7 @@ namespace AncelSearchTool {
 
             layout_grid.margin = 12;
 
-            model = new Gtk.ListStore (4, typeof (string), typeof (string), typeof (string), typeof (string));
+            model = new Gtk.TreeStore (4, typeof (string), typeof (string), typeof (string), typeof (string));
             list = new Gtk.TreeView.with_model (this.model);
             Gtk.CellRendererText cell = new Gtk.CellRendererText ();
             cell.set ("background_set", true);
