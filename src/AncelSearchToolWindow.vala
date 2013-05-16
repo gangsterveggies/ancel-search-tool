@@ -28,6 +28,8 @@ namespace AncelSearchTool {
         private unowned Thread<void*> search_thread;
         private bool search_cancel;
         private bool search_over;
+
+		private int used_items;
         
         private Gtk.Grid layout_grid;
 
@@ -55,6 +57,7 @@ namespace AncelSearchTool {
             icon_name = "";
             this.search_cancel = false;
             this.search_over = true;
+			this.used_items = 0;
 
             title = _("Ancel Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
@@ -68,7 +71,14 @@ namespace AncelSearchTool {
         private void append_to_list (Result new_item) {
             Gtk.TreeIter iter;
             model.append (out iter);
-            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
+			string color_string = "white";
+
+			if (used_items % 2 == 0) {
+				color_string = "#F2F2F2";
+			}
+
+            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location, 3, color_string);
+			used_items++;
         }
 
         private void* search_func () {
@@ -102,6 +112,7 @@ namespace AncelSearchTool {
                 }
             } else {
                 this.search_cancel = true;
+				this.used_items = 0;
                 search_thread.join ();
             }
         }
@@ -132,12 +143,13 @@ namespace AncelSearchTool {
 
             layout_grid.margin = 12;
 
-            model = new Gtk.ListStore (3, typeof (string), typeof (string), typeof (string));
+            model = new Gtk.ListStore (4, typeof (string), typeof (string), typeof (string), typeof (string));
             list = new Gtk.TreeView.with_model (this.model);
-            Gtk.CellRendererSpin cell = new Gtk.CellRendererSpin ();
-            list.insert_column_with_attributes (-1, "Filename", cell, "text", 0);
-            list.insert_column_with_attributes (-1, "Type", cell, "text", 1);
-            list.insert_column_with_attributes (-1, "Location", cell, "text", 2);
+            Gtk.CellRendererText cell = new Gtk.CellRendererText ();
+			cell.set ("background_set", true);
+            list.insert_column_with_attributes (-1, "Filename", cell, "text", 0, "background", 3);
+            list.insert_column_with_attributes (-1, "Type", cell, "text", 1, "background", 3);
+            list.insert_column_with_attributes (-1, "Location", cell, "text", 2, "background", 3);
             list.hexpand = true;
             list.vexpand = true;
             list.row_activated.connect (on_row_activated);
