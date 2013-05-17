@@ -28,8 +28,6 @@ namespace AncelSearchTool {
         private unowned Thread<void*> search_thread;
         private bool search_cancel;
         private bool search_over;
-
-        private int used_items;
         
         private Gtk.Grid layout_grid;
 
@@ -42,6 +40,7 @@ namespace AncelSearchTool {
 
         private Gtk.Label search_text_label;
         private Gtk.Label search_location_label;
+        private Gtk.Label search_results_label;
 
         private Gtk.Entry search_text_entry;
         private Gtk.FileChooserButton file_chooser_button;
@@ -59,7 +58,6 @@ namespace AncelSearchTool {
             icon_name = "";
             this.search_cancel = false;
             this.search_over = true;
-            this.used_items = 0;
             parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
 
             title = _("Ancel Search Tool");
@@ -82,8 +80,8 @@ namespace AncelSearchTool {
 
             string color_string = "white";
 
-            if (used_items % 2 == 0) {
-                color_string = "#F2F2F2";
+            if (!SearchTool.keyword_match (new_item.name)) {
+                color_string = "red";//"#F2F2F2";
             }
 
             if (new_item.type == "Directory") {
@@ -91,7 +89,6 @@ namespace AncelSearchTool {
             }
 
             model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location, 3, color_string);
-            used_items++;
         }
 
         private void* search_func () {
@@ -127,7 +124,6 @@ namespace AncelSearchTool {
                 }
             } else {
                 this.search_cancel = true;
-                this.used_items = 0;
                 search_thread.join ();
             }
         }
@@ -143,6 +139,10 @@ namespace AncelSearchTool {
             search_location_label.set_alignment (0, 0.5f);
             search_location_label.set_justify (Gtk.Justification.LEFT);
 
+            search_results_label = new Gtk.Label ("Results:");
+            search_results_label.set_alignment (0, 0.5f);
+            search_results_label.set_justify (Gtk.Justification.LEFT);
+
             search_text_entry = new Gtk.Entry ();
             search_text_entry.hexpand = true;
 
@@ -155,6 +155,8 @@ namespace AncelSearchTool {
 
             layout_grid.attach (search_location_label, 1, 2, 1, 1);
             layout_grid.attach (file_chooser_button, 2, 2, 12, 1);
+
+            layout_grid.attach (search_results_label, 1, 3, 1, 1);
 
             layout_grid.margin = 12;
 
@@ -188,21 +190,6 @@ namespace AncelSearchTool {
             add (layout_grid);
         }
 
-        private string console_clean (string command) {
-            string new_string = "";
-            int i;
-
-            for (i = 0; i < command.length; i++) {
-                if (command[i].isspace ()) {
-                    new_string += "\\";
-                }
-
-                new_string += command[i].to_string ();
-            }
-
-            return new_string;
-        }
-
         private void on_row_activated (Gtk.TreeView treeview , Gtk.TreePath path, Gtk.TreeViewColumn column) {
             Gtk.TreeIter iter;
             treeview.model.get_iter (out iter, path);
@@ -210,12 +197,12 @@ namespace AncelSearchTool {
             treeview.model.get (iter, 1, out item.type, 2, out item.location);
             
             try {
-                string[] spawn_args = {"xdg-open", console_clean (item.location)};
+                string[] spawn_args = {"xdg-open", item.location};
                 string[] spawn_env = Environ.get ();
                 Pid child_pid;
                 Process.spawn_async ("/", spawn_args, spawn_env, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid);
             } catch (SpawnError e) {
-                stdout.printf ("File Error trying to open a directory: %s\n", e.message);
+                stdout.printf ("File Error trying to open a file: %s\n", e.message);
             }
         }
     }

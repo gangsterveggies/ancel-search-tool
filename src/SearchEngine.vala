@@ -76,6 +76,10 @@ public class SearchTool {
         return parse_location (next, next_type, next_extension, dir_stack.first ());
     }
 
+    public static bool keyword_match (string word) {
+        return !((keyword.length > word.length || !(keyword.down () in word.down ())) && keyword != "*");
+    }
+
     public static bool has_next () {
         try {
             FileInfo file_info = null;
@@ -123,9 +127,10 @@ public class SearchTool {
         if (next_type == FileType.DIRECTORY) {
             dir_stack.add (current_location + "/" + next);
             counter++;
+            return true;
         }
 
-        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
+        if (!keyword_match (next)) {
             return has_next ();
         }
 
