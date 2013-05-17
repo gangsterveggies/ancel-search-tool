@@ -60,7 +60,7 @@ namespace AncelSearchTool {
             this.search_over = true;
             parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
 
-            title = _("Ancel Search Tool");
+            title = _("Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
 
             setup_ui ();
