@@ -20,6 +20,7 @@
 ***/
 
 namespace AncelSearchTool {
+    using Gtk;
 
     public class AncelSearchToolWindow : Gtk.Window {
 
@@ -57,19 +58,30 @@ namespace AncelSearchTool {
         }
 
         private void init () {
-            icon_name = "";
+            this.icon_name = "";
             this.search_cancel = false;
             this.search_over = true;
-            initial_directory = "";
-            parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
+            this.initial_directory = "";
+            this.parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
 
             title = _("Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
+            this.key_press_event.connect (on_key_pressed);
 
             setup_ui ();
             show_all ();
 
             set_size_request (640, 400);
+        }
+
+        private bool on_key_pressed (Gtk.Widget source, Gdk.EventKey key) {
+            if (key.keyval == 65293) {
+                on_search_clicked ();               
+            } else if (key.keyval == 65307) {
+                this.destroy ();
+            }
+
+            return false;
         }
 
         private void append_to_list (Result new_item) {
@@ -110,9 +122,14 @@ namespace AncelSearchTool {
         private void on_search_clicked () {
             if (search_over) {
                 parent_map.clear ();
+                initial_directory = file_chooser_button.get_filename ();
+                
+                if (search_text_entry.text == "") {
+                    return;
+                }
+
                 search_cancel = false;
                 search_over = false;
-                initial_directory = file_chooser_button.get_filename ();
                 search_button.set_label ("Stop");
                 model.clear();
 
