@@ -75,9 +75,9 @@ namespace AncelSearchTool {
         }
 
         private bool on_key_pressed (Gtk.Widget source, Gdk.EventKey key) {
-            if (key.keyval == 65293 && search_text_entry.is_focus) {
+            if (key.keyval == Gdk.Key.Return && search_text_entry.is_focus) {
                 on_search_clicked ();               
-            } else if (key.keyval == 65307) {
+            } else if (key.keyval == Gdk.Key.Escape) {
                 this.destroy ();
             }
 
