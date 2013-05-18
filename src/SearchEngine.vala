@@ -20,7 +20,7 @@
 
 using Gee;
 
-public class SearchTool {
+public class SearchEngine {
     public static string current_location;
     public static string original_location;
     public static string keyword;

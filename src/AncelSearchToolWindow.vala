@@ -80,8 +80,8 @@ namespace AncelSearchTool {
 
             string color_string = "white";
 
-            if (!SearchTool.keyword_match (new_item.name)) {
-                color_string = "red";//"#F2F2F2";
+            if (!SearchEngine.keyword_match (new_item.name)) {
+                color_string = "red";
             }
 
             if (new_item.type == "Directory") {
@@ -92,10 +92,10 @@ namespace AncelSearchTool {
         }
 
         private void* search_func () {
-            SearchTool.init_search(file_chooser_button.get_filename (), search_text_entry.text);
+            SearchEngine.init_search(file_chooser_button.get_filename (), search_text_entry.text);
 
-            while (!this.search_cancel && SearchTool.has_next ()) {
-                append_to_list (SearchTool.get_next());
+            while (!this.search_cancel && SearchEngine.has_next ()) {
+                append_to_list (SearchEngine.get_next ());
                 list.expand_all ();
                 Thread.usleep (1000);
             }
