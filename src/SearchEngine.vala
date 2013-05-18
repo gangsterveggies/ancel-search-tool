@@ -32,6 +32,25 @@ public class SearchEngine {
     public static FileEnumerator enumerator;
     public static ArrayList<string> dir_stack;
 
+	public static Result get_parent_directory (string location) {
+		string name = "";
+		string parent = "";
+		
+		int i;
+		
+		for (i = location.length - 1; i >= 0 && location[i] != '/'; i--) {
+			name += location[i].to_string ();
+		}
+		
+		i--;
+
+		for (; i >= 0; i--) {
+			parent += location[i].to_string ();
+		}
+
+		return new Result (location, name.reverse (), "Directory", parent.reverse ());
+	}
+
     public static Result parse_location (string loc, FileType file_type, string type, string parent) {
         string name = "";
         
@@ -127,7 +146,6 @@ public class SearchEngine {
         if (next_type == FileType.DIRECTORY) {
             dir_stack.add (current_location + "/" + next);
             counter++;
-            return true;
         }
 
         if (!keyword_match (next)) {

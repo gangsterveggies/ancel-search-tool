@@ -28,6 +28,8 @@ namespace AncelSearchTool {
         private unowned Thread<void*> search_thread;
         private bool search_cancel;
         private bool search_over;
+
+		private string initial_directory;
         
         private Gtk.Grid layout_grid;
 
@@ -58,6 +60,7 @@ namespace AncelSearchTool {
             icon_name = "";
             this.search_cancel = false;
             this.search_over = true;
+			initial_directory = "";
             parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
 
             title = _("Search Tool");
@@ -72,27 +75,25 @@ namespace AncelSearchTool {
         private void append_to_list (Result new_item) {
             Gtk.TreeIter iter;
 
-            if (parent_map.has_key (new_item.parent)) {
-                model.append (out iter, parent_map.get (new_item.parent));
-            } else {
-                model.append (out iter, null);
-            }
+			if (new_item.parent == initial_directory) {
+				model.append (out iter, null);
+			} else {
+				if (!parent_map.has_key (new_item.parent)) {
+					append_to_list (SearchEngine.get_parent_directory (new_item.parent));
+				}
 
-            string color_string = "white";
-
-            if (!SearchEngine.keyword_match (new_item.name)) {
-                color_string = "red";
-            }
+				model.append (out iter, parent_map.get (new_item.parent));
+			}
 
             if (new_item.type == "Directory") {
                 parent_map.set (new_item.location, iter);
             }
 
-            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location, 3, color_string);
+            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
         }
 
         private void* search_func () {
-            SearchEngine.init_search(file_chooser_button.get_filename (), search_text_entry.text);
+            SearchEngine.init_search (initial_directory, search_text_entry.text);
 
             while (!this.search_cancel && SearchEngine.has_next ()) {
                 append_to_list (SearchEngine.get_next ());
@@ -111,6 +112,7 @@ namespace AncelSearchTool {
                 parent_map.clear ();
                 search_cancel = false;
                 search_over = false;
+				initial_directory = file_chooser_button.get_filename ();
                 search_button.set_label ("Stop");
                 model.clear();
 
