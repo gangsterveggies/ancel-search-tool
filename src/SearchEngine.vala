@@ -20,7 +20,7 @@
 
 using Gee;
 
-public class SearchTool {
+public class SearchEngine {
     public static string current_location;
     public static string original_location;
     public static string keyword;
@@ -31,6 +31,25 @@ public class SearchTool {
     public static int counter;
     public static FileEnumerator enumerator;
     public static ArrayList<string> dir_stack;
+
+    public static Result get_parent_directory (string location) {
+        string name = "";
+        string parent = "";
+        
+        int i;
+        
+        for (i = location.length - 1; i >= 0 && location[i] != '/'; i--) {
+            name += location[i].to_string ();
+        }
+        
+        i--;
+
+        for (; i >= 0; i--) {
+            parent += location[i].to_string ();
+        }
+
+        return new Result (location, name.reverse (), "Directory", parent.reverse ());
+    }
 
     public static Result parse_location (string loc, FileType file_type, string type, string parent) {
         string name = "";
@@ -74,6 +93,10 @@ public class SearchTool {
 
     public static Result get_next () {
         return parse_location (next, next_type, next_extension, dir_stack.first ());
+    }
+
+    public static bool keyword_match (string word) {
+        return !((keyword.length > word.length || !(keyword.down () in word.down ())) && keyword != "*");
     }
 
     public static bool has_next () {
@@ -125,7 +148,7 @@ public class SearchTool {
             counter++;
         }
 
-        if ((keyword.length > next.length || !(keyword.down () in next.down ())) && keyword != "*") {
+        if (!keyword_match (next)) {
             return has_next ();
         }
 
