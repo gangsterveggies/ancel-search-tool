@@ -31,7 +31,7 @@ namespace AncelSearchTool {
         private bool search_over;
 
         private string initial_directory;
-        
+
         private Gtk.Grid layout_grid;
 
         private Gtk.ScrolledWindow scrolled_window;
@@ -51,22 +51,22 @@ namespace AncelSearchTool {
         private Gtk.Button search_button;
         private Gtk.Button about_button;
 
-        public AncelSearchToolWindow (Granite.Application app) {
-            this.app = app as AncelSearchTool;
-            set_application (app);
+        public AncelSearchToolWindow (Granite.Application _app) {
+            app = _app as AncelSearchTool;
+            set_application (_app);
             init ();
         }
 
         private void init () {
-            this.icon_name = "";
-            this.search_cancel = false;
-            this.search_over = true;
-            this.initial_directory = "";
-            this.parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
+            icon_name = "";
+            search_cancel = false;
+            search_over = true;
+            initial_directory = "";
+            parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
 
             title = _("Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
-            this.key_press_event.connect (on_key_pressed);
+            key_press_event.connect (on_key_pressed);
 
             setup_ui ();
             show_all ();
@@ -76,7 +76,7 @@ namespace AncelSearchTool {
 
         private bool on_key_pressed (Gtk.Widget source, Gdk.EventKey key) {
             if (key.keyval == Gdk.Key.Return && search_text_entry.is_focus) {
-                on_search_clicked ();               
+                on_search_clicked ();
             } else if (key.keyval == Gdk.Key.Escape) {
                 this.destroy ();
             }
@@ -97,11 +97,27 @@ namespace AncelSearchTool {
                 model.append (out iter, parent_map.get (new_item.parent));
             }
 
+            GLib.Icon icon = new_item.icon;
+
             if (new_item.type == "Directory") {
                 parent_map.set (new_item.location, iter);
+
+                try {
+                    icon = IconTheme.get_default ().load_icon (Gtk.Stock.DIRECTORY, 16, 0);
+                } catch (GLib.Error e) {
+                    stderr.printf ("Error trying to open Icon: %s\n", e.message);
+                }
             }
 
-            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location);
+            if (icon == null) {
+                try {
+                    icon = IconTheme.get_default ().load_icon (Gtk.Stock.FILE, 16, 0); }
+                catch (GLib.Error e) {
+                    stderr.printf ("Error trying to open Icon: %s\n", e.message);
+                }
+            }
+
+            model.set (iter, 0, new_item.name, 1, new_item.type, 2, new_item.location, 3, icon);
         }
 
         private void* search_func () {
@@ -123,7 +139,7 @@ namespace AncelSearchTool {
             if (search_over) {
                 parent_map.clear ();
                 initial_directory = file_chooser_button.get_filename ();
-                
+
                 if (search_text_entry.text == "") {
                     return;
                 }
@@ -136,7 +152,7 @@ namespace AncelSearchTool {
                 try {
                     // New version of Threading (not working)
                     // search_thread = new Thread<void*> (search_func);
-                    search_thread = Thread.create<void*> (search_func, false);              
+                    search_thread = Thread.create<void*> (search_func, false);
                 } catch (ThreadError e) {
                     stderr.printf ("%s\n", e.message);
                     return;
@@ -179,13 +195,26 @@ namespace AncelSearchTool {
 
             layout_grid.margin = 12;
 
-            model = new Gtk.TreeStore (4, typeof (string), typeof (string), typeof (string), typeof (string));
+            model = new Gtk.TreeStore (4, typeof (string), typeof (string),
+                                       typeof (string), typeof (GLib.Icon));
+
             list = new Gtk.TreeView.with_model (this.model);
             Gtk.CellRendererText cell = new Gtk.CellRendererText ();
-            cell.set ("background_set", true);
-            list.insert_column_with_attributes (-1, "Filename", cell, "text", 0, "background", 3);
-            list.insert_column_with_attributes (-1, "Type", cell, "text", 1, "background", 3);
-            list.insert_column_with_attributes (-1, "Location", cell, "text", 2, "background", 3);
+
+            Gtk.TreeViewColumn col = new Gtk.TreeViewColumn ();
+            col.title = "Filename";
+            col.resizable = true;
+            var crp = new Gtk.CellRendererPixbuf ();
+            col.pack_start (crp, false);
+            col.add_attribute (crp, "gicon", 3);
+
+            var crt = new CellRendererText ();
+            col.pack_start (crt, false);
+            col.add_attribute (crt, "text", 0);
+
+            list.insert_column (col, -1);
+            list.insert_column_with_attributes (-1, "Type", cell, "text", 1);
+            list.insert_column_with_attributes (-1, "Location", cell, "text", 2);
             list.hexpand = true;
             list.vexpand = true;
             list.row_activated.connect (on_row_activated);
@@ -209,17 +238,21 @@ namespace AncelSearchTool {
             add (layout_grid);
         }
 
-        private void on_row_activated (Gtk.TreeView treeview , Gtk.TreePath path, Gtk.TreeViewColumn column) {
+        private void on_row_activated (Gtk.TreeView treeview , Gtk.TreePath path,
+                                       Gtk.TreeViewColumn column) {
             Gtk.TreeIter iter;
             treeview.model.get_iter (out iter, path);
             Result item = new Result.null ();
             treeview.model.get (iter, 1, out item.type, 2, out item.location);
-            
+
             try {
                 string[] spawn_args = {"xdg-open", item.location};
                 string[] spawn_env = Environ.get ();
                 Pid child_pid;
-                Process.spawn_async ("/", spawn_args, spawn_env, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid);
+
+                Process.spawn_async ("/", spawn_args, spawn_env,
+                                     SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD,
+                                     null, out child_pid);
             } catch (SpawnError e) {
                 stdout.printf ("File Error trying to open a file: %s\n", e.message);
             }
