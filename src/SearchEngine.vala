@@ -26,6 +26,7 @@ public class SearchEngine {
     public static string keyword;
     public static string next;
     public static string next_extension;
+    public static GLib.Icon next_icon;
     public static FileType next_type;
     public static bool begin;
     public static int counter;
@@ -48,10 +49,10 @@ public class SearchEngine {
             parent += location[i].to_string ();
         }
 
-        return new Result (location, name.reverse (), "Directory", parent.reverse ());
+        return new Result (location, name.reverse (), "Directory", parent.reverse (), new GLib.ThemedIcon (""));
     }
 
-    public static Result parse_location (string loc, FileType file_type, string type, string parent) {
+    public static Result parse_location (string loc, FileType file_type, string type, string parent, GLib.Icon icon) {
         string name = "";
         
         if (file_type == FileType.REGULAR) {
@@ -74,11 +75,11 @@ public class SearchEngine {
             
             name = name.reverse ();
 
-            return new Result (current_location + "/" + loc, name, type, parent);
+            return new Result (current_location + "/" + loc, name, type, parent, icon);
         } else if (file_type == FileType.DIRECTORY) {
-            return new Result (current_location + "/" + loc, loc, "Directory", parent);
+            return new Result (current_location + "/" + loc, loc, "Directory", parent, icon);
         } else {
-            return new Result (current_location + "/" + loc, loc, "Other", parent);
+            return new Result (current_location + "/" + loc, loc, "Other", parent, icon);
         }
     }
 
@@ -92,7 +93,7 @@ public class SearchEngine {
     }
 
     public static Result get_next () {
-        return parse_location (next, next_type, next_extension, dir_stack.first ());
+        return parse_location (next, next_type, next_extension, dir_stack.first (), next_icon);
     }
 
     public static bool keyword_match (string word) {
@@ -107,6 +108,7 @@ public class SearchEngine {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
                 next_extension = file_info.get_content_type ();
+                next_icon = file_info.get_icon ();
             } else {
                 if (!begin) {
                     dir_stack.remove_at(0);
@@ -138,6 +140,7 @@ public class SearchEngine {
                 next = file_info.get_name ();
                 next_type = file_info.get_file_type ();
                 next_extension = file_info.get_content_type ();
+                next_icon = file_info.get_icon ();
             }
         } catch (Error e) {
             stderr.printf ("File Error trying to read a directory: %s\n", e.message);
