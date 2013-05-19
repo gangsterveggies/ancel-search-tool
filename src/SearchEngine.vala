@@ -60,7 +60,6 @@ public class SearchEngine {
 
             for (i = loc.length - 1; i >= 0; i--) {
                 if (loc[i] == '.') {
-                    i--;
                     break;
                 }
             }
@@ -69,11 +68,7 @@ public class SearchEngine {
                 i = loc.length - 1;
             }
 
-            for (; i >= 0; i--) {
-                name += loc[i].to_string ();
-            }
-            
-            name = name.reverse ();
+            name = loc.slice (0, i);
 
             return new Result (current_location + "/" + loc, name, type, parent, icon);
         } else if (file_type == FileType.DIRECTORY) {
