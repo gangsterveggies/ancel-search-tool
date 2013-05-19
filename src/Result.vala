@@ -23,18 +23,21 @@ public class Result {
     public string name;
     public string type;
     public string parent;
+    public GLib.Icon icon;
 
     public Result.null () {
         location = "";
         name = "";
         type = "";
         parent = "";
+        icon = null;
     }
 
-    public Result (string _location, string _name, string _type, string _parent) {
+    public Result (string _location, string _name, string _type, string _parent, GLib.Icon _icon) {
         location = _location;
         name = _name;
         parent = _parent;
+        icon = _icon;
 
         if (_type != "") {
             type = _type;
