@@ -175,6 +175,7 @@ namespace AncelSearchTool {
                 stderr.printf ("Extra Options Error!\n");
                 return;
             }
+
             box_expander.remove (box_list.get (id));
             box_list.unset (id);
         }
@@ -208,8 +209,9 @@ namespace AncelSearchTool {
                 var oo = new OptionBox (Gtk.Orientation.HORIZONTAL, 0, i % 2, options_id++);
                 box_expander.add (oo);
                 box_list.set (oo.id, oo);
+
                 oo.remove_button.clicked.connect (() => {
-                        remove_option_box (oo.id);
+                    remove_option_box (oo.id);
                 });
             }
 
