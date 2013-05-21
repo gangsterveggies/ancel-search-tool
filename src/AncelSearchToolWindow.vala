@@ -20,7 +20,6 @@
 ***/
 
 namespace AncelSearchTool {
-    using Gtk;
 
     public class AncelSearchToolWindow : Gtk.Window {
 
@@ -110,7 +109,7 @@ namespace AncelSearchTool {
                 parent_map.set (new_item.location, iter);
 
                 try {
-                    icon = IconTheme.get_default ().load_icon (Gtk.Stock.DIRECTORY, 16, 0);
+                    icon = Gtk.IconTheme.get_default ().load_icon (Gtk.Stock.DIRECTORY, 16, 0);
                 } catch (GLib.Error e) {
                     stderr.printf ("Error trying to open Icon: %s\n", e.message);
                 }
@@ -118,7 +117,7 @@ namespace AncelSearchTool {
 
             if (icon == null) {
                 try {
-                    icon = IconTheme.get_default ().load_icon (Gtk.Stock.FILE, 16, 0); }
+                    icon = Gtk.IconTheme.get_default ().load_icon (Gtk.Stock.FILE, 16, 0); }
                 catch (GLib.Error e) {
                     stderr.printf ("Error trying to open Icon: %s\n", e.message);
                 }
@@ -242,7 +241,7 @@ namespace AncelSearchTool {
             col.pack_start (crp, false);
             col.add_attribute (crp, "gicon", 3);
 
-            var crt = new CellRendererText ();
+            var crt = new Gtk.CellRendererText ();
             col.pack_start (crt, false);
             col.add_attribute (crt, "text", 0);
 
