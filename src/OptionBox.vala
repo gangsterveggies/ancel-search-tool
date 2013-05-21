@@ -26,17 +26,21 @@ public class OptionBox : Gtk.Box {
 
     private Gtk.Entry text_entry;
     private Gtk.Label text_label;
-    private Gtk.Button remove_button;
+    public Gtk.Button remove_button;
 
     private int type;
+    public int id;
     
-    public OptionBox (Gtk.Orientation _orientation, int _spacing, int _type) {
+    public OptionBox (Gtk.Orientation _orientation, int _spacing, int _type, int _id) {
         orientation = _orientation;
         spacing = _spacing;
         type = _type;
+        id = _id;
+
         text_label = new Gtk.Label (labels[type]);
         text_entry = new Gtk.Entry ();
         remove_button = new Gtk.Button.with_label ("Remove");
+
         pack_start (text_label, false, false, 8);
         pack_start (text_entry, true, true, 3);
         pack_start (remove_button, false, false, 0);

@@ -50,6 +50,8 @@ namespace AncelSearchTool {
 
         private Gtk.Expander options_expander;
         private Gtk.Box box_expander;
+        private Gee.HashMap<int, OptionBox?>  box_list;
+        private int options_id;
 
         private Gtk.Button search_button;
         private Gtk.Button about_button;
@@ -66,6 +68,8 @@ namespace AncelSearchTool {
             search_over = true;
             initial_directory = "";
             parent_map = new Gee.HashMap<string, Gtk.TreeIter?> ();
+            box_list = new Gee.HashMap<int, OptionBox?> ();
+            options_id = 0;
 
             title = _("Search Tool");
             Gtk.Settings.get_default ().gtk_application_prefer_dark_theme = true;
@@ -166,6 +170,15 @@ namespace AncelSearchTool {
             }
         }
 
+        private void remove_option_box (int id) {
+            if (!box_list.has_key (id)) {
+                stderr.printf ("Extra Options Error!\n");
+                return;
+            }
+            box_expander.remove (box_list.get (id));
+            box_list.unset (id);
+        }
+
         private void setup_ui () {
             layout_grid = new Gtk.Grid ();
 
@@ -189,11 +202,16 @@ namespace AncelSearchTool {
             options_expander = new Gtk.Expander ("Extra Options:");
             box_expander = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
             options_expander.add (box_expander);
-            box_expander.add (new OptionBox (Gtk.Orientation.HORIZONTAL, 0, 0));
-            box_expander.add (new OptionBox (Gtk.Orientation.HORIZONTAL, 0, 1));
-            var oo = new OptionBox (Gtk.Orientation.HORIZONTAL, 0, 0);
-            box_expander.add (oo);
-            box_expander.remove (oo);
+
+            /* Testing Device */
+            for (int i = 0; i < 6; i++) {
+                var oo = new OptionBox (Gtk.Orientation.HORIZONTAL, 0, i % 2, options_id++);
+                box_expander.add (oo);
+                box_list.set (oo.id, oo);
+                oo.remove_button.clicked.connect (() => {
+                        remove_option_box (oo.id);
+                });
+            }
 
             layout_grid.row_spacing = 10;
 
