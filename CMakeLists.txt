@@ -50,6 +50,7 @@ vala_precompile(VALA_C
     src/AncelSearchToolWindow.vala
     src/SearchEngine.vala
     src/Result.vala
+    src/OptionBox.vala
 PACKAGES
     granite
     gtk+-3.0

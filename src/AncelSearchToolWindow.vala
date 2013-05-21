@@ -48,6 +48,9 @@ namespace AncelSearchTool {
         private Gtk.Entry search_text_entry;
         private Gtk.FileChooserButton file_chooser_button;
 
+        private Gtk.Expander options_expander;
+        private Gtk.Box box_expander;
+
         private Gtk.Button search_button;
         private Gtk.Button about_button;
 
@@ -183,6 +186,15 @@ namespace AncelSearchTool {
 
             file_chooser_button = new Gtk.FileChooserButton ("Open", Gtk.FileChooserAction.SELECT_FOLDER);
 
+            options_expander = new Gtk.Expander ("Extra Options:");
+            box_expander = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+            options_expander.add (box_expander);
+            box_expander.add (new OptionBox (Gtk.Orientation.HORIZONTAL, 0, 0));
+            box_expander.add (new OptionBox (Gtk.Orientation.HORIZONTAL, 0, 1));
+            var oo = new OptionBox (Gtk.Orientation.HORIZONTAL, 0, 0);
+            box_expander.add (oo);
+            box_expander.remove (oo);
+
             layout_grid.row_spacing = 10;
 
             layout_grid.attach (search_text_label, 1, 1, 1, 1);
@@ -191,7 +203,9 @@ namespace AncelSearchTool {
             layout_grid.attach (search_location_label, 1, 2, 1, 1);
             layout_grid.attach (file_chooser_button, 2, 2, 12, 1);
 
-            layout_grid.attach (search_results_label, 1, 3, 1, 1);
+            layout_grid.attach (options_expander, 1, 3, 13, 1);
+
+            layout_grid.attach (search_results_label, 1, 4, 1, 1);
 
             layout_grid.margin = 12;
 
@@ -222,14 +236,14 @@ namespace AncelSearchTool {
             scrolled_window = new Gtk.ScrolledWindow (null, null);
             scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
             scrolled_window.add (list);
-            layout_grid.attach (scrolled_window, 1, 4, 13, 1);
+            layout_grid.attach (scrolled_window, 1, 5, 13, 1);
 
             search_button = new Gtk.Button.with_label ("Search");
-            layout_grid.attach (search_button, 13, 5, 1, 1);
+            layout_grid.attach (search_button, 13, 6, 1, 1);
             search_button.clicked.connect (on_search_clicked);
 
             about_button = new Gtk.Button.with_label ("About");
-            layout_grid.attach (about_button, 1, 5, 1, 1);
+            layout_grid.attach (about_button, 1, 6, 1, 1);
 
             about_button.clicked.connect (() => {
                 this.app.show_about (this);
