@@ -1,8 +1,8 @@
 # Check http://webdev.elementaryos.org/docs/developer-guide/cmake for documentation
 
 project (ancel-search-tool C)
-cmake_minimum_required (VERSION 2.8)
-cmake_policy (VERSION 2.8)
+cmake_minimum_required (VERSION 2.6)
+cmake_policy (VERSION 2.6)
 
 list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/vala)
 
