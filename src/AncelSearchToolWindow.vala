@@ -102,7 +102,7 @@ namespace AncelSearchTool {
                 parent_map.set (new_item.location, iter);
 
                 try {
-                    icon = Gtk.IconTheme.get_default ().load_icon (Gtk.Stock.DIRECTORY, 16, 0);
+                    icon = Gtk.IconTheme.get_default ().load_icon ("gtk-directory", 16, 0);
                 } catch (GLib.Error e) {
                     stderr.printf ("Error trying to open Icon: %s\n", e.message);
                 }
@@ -110,7 +110,7 @@ namespace AncelSearchTool {
 
             if (icon == null) {
                 try {
-                    icon = Gtk.IconTheme.get_default ().load_icon (Gtk.Stock.FILE, 16, 0); }
+                    icon = Gtk.IconTheme.get_default ().load_icon ("gtk-file", 16, 0); }
                 catch (GLib.Error e) {
                     stderr.printf ("Error trying to open Icon: %s\n", e.message);
                 }
