@@ -1,6 +1,6 @@
 # Check http://webdev.elementaryos.org/docs/developer-guide/cmake for documentation
 
-project (ancel-search-tool)
+project (ancel-search-tool C)
 cmake_minimum_required (VERSION 2.8)
 cmake_policy (VERSION 2.8)
 
@@ -58,6 +58,7 @@ PACKAGES
     gee-1.0
 OPTIONS
     --thread
+    --target-glib=2.32
     --vapidir=${CMAKE_CURRENT_SOURCE_DIR}/vapi/
 )
 

@@ -20,13 +20,12 @@
 ***/
 
 namespace AncelSearchTool {
-    using Gtk;
 
     public class AncelSearchToolWindow : Gtk.Window {
 
         public AncelSearchTool app;
 
-        private unowned Thread<void*> search_thread;
+        private Thread<void*> search_thread;
         private bool search_cancel;
         private bool search_over;
 
@@ -103,7 +102,7 @@ namespace AncelSearchTool {
                 parent_map.set (new_item.location, iter);
 
                 try {
-                    icon = IconTheme.get_default ().load_icon (Gtk.Stock.DIRECTORY, 16, 0);
+                    icon = Gtk.IconTheme.get_default ().load_icon (Gtk.Stock.DIRECTORY, 16, 0);
                 } catch (GLib.Error e) {
                     stderr.printf ("Error trying to open Icon: %s\n", e.message);
                 }
@@ -111,7 +110,7 @@ namespace AncelSearchTool {
 
             if (icon == null) {
                 try {
-                    icon = IconTheme.get_default ().load_icon (Gtk.Stock.FILE, 16, 0); }
+                    icon = Gtk.IconTheme.get_default ().load_icon (Gtk.Stock.FILE, 16, 0); }
                 catch (GLib.Error e) {
                     stderr.printf ("Error trying to open Icon: %s\n", e.message);
                 }
@@ -150,10 +149,8 @@ namespace AncelSearchTool {
                 model.clear();
 
                 try {
-                    // New version of Threading (not working)
-                    // search_thread = new Thread<void*> (search_func);
-                    search_thread = Thread.create<void*> (search_func, false);
-                } catch (ThreadError e) {
+                    search_thread = new Thread<void*>.try ("search", search_func);
+                } catch (Error e) {
                     stderr.printf ("%s\n", e.message);
                     return;
                 }
@@ -208,7 +205,7 @@ namespace AncelSearchTool {
             col.pack_start (crp, false);
             col.add_attribute (crp, "gicon", 3);
 
-            var crt = new CellRendererText ();
+            var crt = new Gtk.CellRendererText ();
             col.pack_start (crt, false);
             col.add_attribute (crt, "text", 0);
 
