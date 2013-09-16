@@ -4,7 +4,7 @@ project (ancel-search-tool C)
 cmake_minimum_required (VERSION 2.6)
 cmake_policy (VERSION 2.6)
 
-list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/vala)
+list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 enable_testing ()
 
@@ -17,8 +17,6 @@ set (VERSION_INFO "Release")
 set (CMAKE_C_FLAGS "-ggdb")
 set (PREFIX ${CMAKE_INSTALL_PREFIX})
 set (DOLLAR "$")
-
-list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 #configure_file (${CMAKE_SOURCE_DIR}/src/config.vala.cmake ${CMAKE_SOURCE_DIR}/src/config.vala)
 add_definitions (-DGETTEXT_PACKAGE=\"${GETTEXT_PACKAGE}\")
@@ -52,7 +50,7 @@ vala_precompile(VALA_C
     src/Result.vala
 PACKAGES
     granite
-    gtk+-3.0
+    gtk+-3.0>=3.8.4
     libnotify
     gdk-3.0
     gee-1.0
